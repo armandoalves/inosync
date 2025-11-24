@@ -2,7 +2,6 @@
 	"id": "inosync",
 	"name": "InoSync",
 	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
 	"description": "Sync Inoreader tagged items into vault folder notes.",
 	"author": "Armando Alves",
 	"authorUrl": "https://www.armandoalves.com",
