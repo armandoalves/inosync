@@ -9,7 +9,7 @@ Turn your RSS reading into a knowledge base by automatically importing articles 
 ## Features
 
 - **Sync Public Feeds**: Import articles from any public Inoreader tag (Broadcast).
-- **Auto-Organization**: Map different Inoreader tags to specific folders in your vault.
+- **Auto-Organization**: Map different Inoreader tags to specific folders in your Obsidian vault.
 - **Smart Parsing**: Paste an RSS feed URL to automatically configure User ID and Tags.
 - **Deduplication**: Automatically checks for existing notes to prevent duplicates.
 - **Image Support**: Automatically imports external images into the Markdown content.
