@@ -1,0 +1,5 @@
+{
+  "name": "InoSync",
+  "description": "Sync Inoreader tagged items into vault folder notes.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,67 @@
+/* InoSync Plugin Styles */
+
+.inosync-settings-header {
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--background-modifier-border);
+    margin-bottom: 20px;
+}
+
+.inosync-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.inosync-tag-row:last-child {
+    border-bottom: none;
+}
+
+.inosync-tag-name {
+    font-weight: 600;
+    color: var(--text-normal);
+}
+
+.inosync-tag-folder {
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+/* Toggle Switch - Copied from styles.css for Simulator compatibility */
+.inosync-toggle {
+    width: 2.5rem; /* w-10 */
+    height: 1.25rem; /* h-5 */
+    border-radius: 9999px;
+    position: relative;
+    transition: background-color 200ms ease-in-out;
+    border: none;
+    background-color: #333; /* Fallback for var(--inosync-border) */
+    cursor: pointer;
+}
+.inosync-toggle.mod-active {
+    background-color: #7c3aed; /* Fallback for var(--inosync-accent) */
+}
+.inosync-toggle-thumb {
+    position: absolute;
+    top: 0.25rem; /* top-1 */
+    left: 0.25rem; /* left-1 */
+    width: 0.75rem; /* w-3 */
+    height: 0.75rem; /* h-3 */
+    border-radius: 9999px;
+    background-color: white;
+    transition: transform 200ms;
+    transform: translateX(0);
+}
+.inosync-toggle.mod-active .inosync-toggle-thumb {
+    transform: translateX(1.25rem);
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.animate-spin {
+    animation: spin 1s linear infinite;
+}

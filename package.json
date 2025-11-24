@@ -1,0 +1,48 @@
+{
+  "name": "inosync",
+  "version": "1.0.0",
+  "description": "Sync Inoreader tagged items into vault folder notes.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "node esbuild.config.mjs production",
+    "version": "node version-bump.mjs && git add manifest.json versions.json"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "inoreader",
+    "rss",
+    "sync"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armandoalves/inosync.git"
+  },
+  "bugs": {
+    "url": "https://github.com/armandoalves/inosync/issues"
+  },
+  "homepage": "https://github.com/armandoalves/inosync#readme",
+  "author": "Armando Alves",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "builtin-modules": "^3.3.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.10.0",
+    "obsidian": "^1.7.2",
+    "tslib": "^2.6.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0",
+    "@vitejs/plugin-react": "^4.3.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.344.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  }
+}

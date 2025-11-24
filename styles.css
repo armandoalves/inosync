@@ -1,0 +1,176 @@
+
+/* InoSync Plugin Styles */
+
+/* 1. CSS Variables Mapping to Obsidian Native Themes */
+.inosync-settings-wrapper {
+    --inosync-bg: var(--background-primary);
+    --inosync-ui: var(--background-secondary);
+    --inosync-border: var(--background-modifier-border);
+    --inosync-text: var(--text-normal);
+    --inosync-muted: var(--text-muted);
+    --inosync-accent: var(--interactive-accent);
+    --inosync-accent-hover: var(--interactive-accent-hover);
+    --inosync-active: var(--background-modifier-hover);
+    --inosync-ribbon: var(--background-secondary-alt);
+    --inosync-red: var(--text-error);
+    --inosync-green: var(--text-success);
+    
+    font-size: var(--font-ui-small);
+    color: var(--inosync-text);
+    /* Removed fixed height and overflow to fix scrolling issue in Obsidian */
+    width: 100%; 
+    display: flex;
+    flex-direction: column;
+}
+
+/* 2. Layout Utilities */
+.inosync-settings-wrapper .flex { display: flex; }
+.inosync-settings-wrapper .flex-col { flex-direction: column; }
+.inosync-settings-wrapper .grid { display: grid; }
+.inosync-settings-wrapper .items-center { align-items: center; }
+.inosync-settings-wrapper .justify-between { justify-content: space-between; }
+.inosync-settings-wrapper .justify-end { justify-content: flex-end; }
+.inosync-settings-wrapper .flex-1 { flex: 1; }
+.inosync-settings-wrapper .relative { position: relative; }
+.inosync-settings-wrapper .absolute { position: absolute; }
+.inosync-settings-wrapper .overflow-y-auto { overflow-y: auto; }
+.inosync-settings-wrapper .overflow-hidden { overflow: hidden; }
+.inosync-settings-wrapper .h-full { height: 100%; }
+.inosync-settings-wrapper .w-full { width: 100%; }
+.inosync-settings-wrapper .w-64 { width: 16rem; max-width: 100%; }
+
+/* Spacing */
+.inosync-settings-wrapper .p-4 { padding: 1rem; }
+.inosync-settings-wrapper .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.inosync-settings-wrapper .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.inosync-settings-wrapper .px-4 { padding-left: 1rem; padding-right: 1rem; }
+.inosync-settings-wrapper .px-10 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.inosync-settings-wrapper .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.inosync-settings-wrapper .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+.inosync-settings-wrapper .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.inosync-settings-wrapper .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.inosync-settings-wrapper .py-8 { padding-top: 2rem; padding-bottom: 1rem; }
+.inosync-settings-wrapper .pb-12 { padding-bottom: 3rem; }
+.inosync-settings-wrapper .mb-1 { margin-bottom: 0.25rem; }
+.inosync-settings-wrapper .mb-2 { margin-bottom: 0.5rem; }
+.inosync-settings-wrapper .mb-3 { margin-bottom: 0.75rem; }
+.inosync-settings-wrapper .mb-4 { margin-bottom: 1rem; }
+.inosync-settings-wrapper .mb-6 { margin-bottom: 1.5rem; }
+.inosync-settings-wrapper .space-y-6 > * + * { margin-top: 1.5rem; }
+.inosync-settings-wrapper .space-y-10 > * + * { margin-top: 2.5rem; }
+.inosync-settings-wrapper .gap-2 { gap: 0.5rem; }
+.inosync-settings-wrapper .gap-4 { gap: 1rem; }
+.inosync-settings-wrapper .gap-12 { gap: 1.5rem; }
+
+/* Grid */
+.inosync-settings-wrapper .grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.inosync-settings-wrapper .col-span-1 { grid-column: span 1 / span 1; }
+.inosync-settings-wrapper .col-span-4 { grid-column: span 4 / span 4; }
+.inosync-settings-wrapper .col-span-7 { grid-column: span 7 / span 7; }
+
+/* 3. Colors & Text */
+.inosync-settings-wrapper .bg-obsidian-bg { background-color: var(--inosync-bg); }
+.inosync-settings-wrapper .bg-obsidian-ui { background-color: var(--inosync-ui); }
+.inosync-settings-wrapper .bg-obsidian-ui\/20 { background-color: rgba(var(--inosync-ui), 0.2); }
+.inosync-settings-wrapper .bg-obsidian-ui\/50 { background-color: var(--inosync-ui); } /* Fallback */
+.inosync-settings-wrapper .bg-obsidian-ribbon { background-color: var(--inosync-ribbon); }
+.inosync-settings-wrapper .bg-transparent { background-color: transparent; }
+
+.inosync-settings-wrapper .text-obsidian-text { color: var(--inosync-text); }
+.inosync-settings-wrapper .text-obsidian-muted { color: var(--inosync-muted); }
+.inosync-settings-wrapper .text-obsidian-accent { color: var(--inosync-accent); }
+.inosync-settings-wrapper .text-white { color: white; }
+.inosync-settings-wrapper .text-red-400 { color: var(--inosync-red); }
+.inosync-settings-wrapper .text-green-400 { color: var(--inosync-green); }
+.inosync-settings-wrapper .text-blue-400 { color: var(--interactive-accent); } /* Use accent as blue proxy */
+
+.inosync-settings-wrapper .border { border-width: 1px; border-style: solid; }
+.inosync-settings-wrapper .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+.inosync-settings-wrapper .divide-y > * + * { border-top-width: 1px; border-top-style: solid; border-color: var(--inosync-border); }
+.inosync-settings-wrapper .border-obsidian-border { border-color: var(--inosync-border); }
+.inosync-settings-wrapper .border-obsidian-border\/30 { border-color: var(--inosync-border); }
+.inosync-settings-wrapper .border-obsidian-border\/50 { border-color: var(--inosync-border); }
+.inosync-settings-wrapper .border-none { border: none; }
+.inosync-settings-wrapper .outline-none { outline: 2px solid transparent; outline-offset: 2px; }
+
+.inosync-settings-wrapper .rounded { border-radius: 4px; }
+.inosync-settings-wrapper .rounded-md { border-radius: 6px; }
+.inosync-settings-wrapper .rounded-lg { border-radius: 8px; }
+.inosync-settings-wrapper .rounded-full { border-radius: 9999px; }
+
+.inosync-settings-wrapper .font-bold { font-weight: 700; }
+.inosync-settings-wrapper .font-medium { font-weight: 500; }
+.inosync-settings-wrapper .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.inosync-settings-wrapper .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.inosync-settings-wrapper .text-xs { font-size: 0.75rem; line-height: 1rem; }
+.inosync-settings-wrapper .uppercase { text-transform: uppercase; }
+.inosync-settings-wrapper .tracking-wider { letter-spacing: 0.05em; }
+
+/* 4. Components */
+
+/* Inputs */
+.inosync-settings-wrapper input[type="text"] {
+    background-color: var(--inosync-ribbon);
+    border: 1px solid var(--inosync-border);
+    color: var(--inosync-text);
+    border-radius: 4px;
+}
+.inosync-settings-wrapper input[type="text"]:focus {
+    border-color: var(--inosync-accent);
+    box-shadow: 0 0 0 1px var(--inosync-accent);
+}
+
+/* Buttons */
+.inosync-settings-wrapper button {
+    cursor: pointer;
+}
+.inosync-settings-wrapper button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Standard Button */
+.inosync-btn-primary {
+    background-color: var(--inosync-accent);
+    color: white;
+}
+.inosync-btn-primary:hover {
+    background-color: var(--inosync-accent-hover);
+}
+
+/* Toggle Switch */
+.inosync-toggle {
+    width: 2.5rem; /* w-10 */
+    height: 1.25rem; /* h-5 */
+    border-radius: 9999px;
+    position: relative;
+    transition: background-color 200ms ease-in-out;
+    border: none;
+    background-color: var(--inosync-border);
+}
+.inosync-toggle.mod-active {
+    background-color: var(--inosync-accent);
+}
+.inosync-toggle-thumb {
+    position: absolute;
+    top: 0.25rem; /* top-1 */
+    left: 0.25rem; /* left-1 */
+    width: 0.75rem; /* w-3 */
+    height: 0.75rem; /* h-3 */
+    border-radius: 9999px;
+    background-color: white;
+    transition: transform 200ms;
+    transform: translateX(0);
+}
+.inosync-toggle.mod-active .inosync-toggle-thumb {
+    transform: translateX(1.25rem); /* translate-x-5 approx */
+}
+
+/* Spinner Animation */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
