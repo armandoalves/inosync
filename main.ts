@@ -10,6 +10,7 @@ export default class InoSyncPlugin extends Plugin {
     settingsRoot: Root | null = null;
     logs: SyncLog[] = [];
     settingTab: InoSyncSettingTab;
+    isSyncing: boolean = false;
     declare app: App;
 
     async onload() {
@@ -78,6 +79,16 @@ export default class InoSyncPlugin extends Plugin {
     }
 
     async sync(force: boolean) {
+        if (this.isSyncing) {
+            new Notice('InoSync: Sync already in progress.');
+            return;
+        }
+
+        this.isSyncing = true;
+        if (this.settingTab) {
+            this.settingTab.renderReact();
+        }
+
         const mode = force ? 'Force Sync' : 'Sync';
         new Notice(`InoSync: Starting ${mode}...`);
         this.addLog(`${mode} started`, 'info');
@@ -111,7 +122,7 @@ export default class InoSyncPlugin extends Plugin {
 
                     let tagCount = 0;
                     for (const item of items) {
-                        const { generatedTitle, markdownContent } = generateObsidianNote(item);
+                        const { generatedTitle, markdownContent } = await generateObsidianNote(this.app, item, this.settings.template);
                         const filepath = `${destFolder}/${generatedTitle}.md`;
                         const existingFile = this.app.vault.getAbstractFileByPath(filepath);
 
@@ -147,6 +158,11 @@ export default class InoSyncPlugin extends Plugin {
             console.error('InoSync Sync Error:', e);
             new Notice('InoSync: Sync failed. Check settings/console.');
             this.addLog('Sync process failed globally', 'error', String(e));
+        } finally {
+            this.isSyncing = false;
+            if (this.settingTab) {
+                this.settingTab.renderReact();
+            }
         }
     }
 }
@@ -200,7 +216,7 @@ class InoSyncSettingTab extends PluginSettingTab {
                     this.renderReact();
                 },
                 onClearLogs: () => this.plugin.clearLogs(),
-                isSyncing: false, 
+                isSyncing: this.plugin.isSyncing, 
                 logs: this.plugin.logs // Pass persistent logs from plugin instance
             })
         );

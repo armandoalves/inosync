@@ -13,6 +13,8 @@ export interface InoreaderItem {
   link?: {
     href: string;
   };
+  author?: string;
+  categories?: string[];
 }
 
 export interface NoteGenerationResult {
@@ -114,6 +116,11 @@ export async function fetchInoreaderFeed(
               return el ? el.textContent : null;
           };
 
+          const getTagHtml = (tagName: string) => {
+            const el = entry.getElementsByTagName(tagName)[0];
+            return el ? el.innerHTML : null;
+          }
+
           const title = getTagText("title") || "Untitled";
           
           // ID: Atom uses <id>, RSS uses <guid>. Fallback to link if neither exists.
@@ -121,18 +128,18 @@ export async function fetchInoreaderFeed(
           
           // Content: Atom <content>, <summary>. RSS <description>, <content:encoded>.
           let content = "";
-          const contentEl = entry.getElementsByTagName("content")[0];
-          const summaryEl = entry.getElementsByTagName("summary")[0];
-          const descriptionEl = entry.getElementsByTagName("description")[0];
+          const contentEl = getTagHtml("content");
+          const summaryEl = getTagHtml("summary");
+          const descriptionEl = getTagHtml("description");
           
           // For content:encoded, it's tricky with namespaced tags in getElementsByTagName.
           // Some browsers support "content:encoded", some "encoded".
-          const encodedEl = entry.getElementsByTagName("content:encoded")[0] || entry.getElementsByTagName("encoded")[0];
-          
-          if (contentEl && contentEl.textContent) content = contentEl.textContent;
-          else if (encodedEl && encodedEl.textContent) content = encodedEl.textContent;
-          else if (descriptionEl && descriptionEl.textContent) content = descriptionEl.textContent;
-          else if (summaryEl && summaryEl.textContent) content = summaryEl.textContent;
+          const encodedEl = getTagHtml("content:encoded") || getTagHtml("encoded");
+
+          if (encodedEl) content = encodedEl;
+          else if (contentEl) content = contentEl;
+          else if (descriptionEl) content = descriptionEl;
+          else if (summaryEl) content = summaryEl;
           
           // Date
           const publishedText = getTagText("published") || getTagText("updated") || getTagText("pubDate") || getTagText("dc:date");
@@ -169,6 +176,12 @@ export async function fetchInoreaderFeed(
 
           // Fallback ID if still missing
           if (!id) id = href;
+
+          // Author
+          const author = getTagText("author") || getTagText("dc:creator") || 'Unknown';
+
+          // Categories
+          const categories = Array.from(entry.getElementsByTagName("category")).map(cat => cat.textContent).filter((c): c is string => c !== null);
           
           return {
               id,
@@ -176,7 +189,9 @@ export async function fetchInoreaderFeed(
               summary: { content },
               published,
               origin: { title: sourceTitle },
-              link: { href }
+              link: { href },
+              author,
+              categories
           };
       });
   } catch (error) {
@@ -222,43 +237,38 @@ function getMockItems(tag: string, userId: string): InoreaderItem[] {
 /**
  * Generates the Obsidian note content with Frontmatter.
  */
-export function generateObsidianNote(item: InoreaderItem): NoteGenerationResult {
+export async function generateObsidianNote(app: App, item: InoreaderItem, template: string): Promise<NoteGenerationResult> {
   const sanitizedTitle = item.title.replace(/[\\/:*?"<>|]/g, '-');
   
-  // Convert HTML summary to crude Markdown
-  let content = item.summary.content || '';
-  
-  // Basic HTML cleanup and whitespace normalization
-  content = content
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
-    .replace(/<a href="(.*?)">(.*?)<\/a>/gi, '[$2]($1)')
-    .replace(/<img[^>]+>/gi, (imgTag) => {
-        const srcMatch = imgTag.match(/src\s*=\s*["']([^"']+)["']/i);
-        const altMatch = imgTag.match(/alt\s*=\s*["']([^"']+)["']/i);
-        
-        if (srcMatch) {
-            const src = srcMatch[1];
-            const alt = altMatch ? altMatch[1] : '';
-            return `\n![${alt}](${src})\n`;
-        }
-        return '';
-    })
-    .replace(/<[^>]*>/g, '') // Strip remaining tags
-    .replace(/\r\n/g, '\n') // Normalize CRLF
-    .replace(/\n\s+\n/g, '\n\n') // Collapse lines containing only whitespace
-    .replace(/\n{3,}/g, '\n\n') // Collapse 3+ newlines to 2
-    .trim();
+  const content = await htmlToMarkdown(app, item.summary.content || '');
 
   const sourceUrl = item.link?.href || 'https://inoreader.com';
+  const sourceTitle = item.origin?.title || 'Unknown';
+  const itemDate = new Date((item.published || 0) * 1000).toISOString();
+  const itemId = item.id.replace(/"/g, '\\"');
+  const author = item.author || 'Unknown';
+  const categories = item.categories?.map(c => c.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s/g, '')) || [];
 
-  // Quote the ID to prevent YAML parsing errors with colons (e.g. tag:inoreader.com...)
-  const markdownContent = `---
-id: "${item.id.replace(/"/g, '\\"')}"
+  let markdownContent;
+  if(template && template.trim() !== ''){
+    markdownContent = template
+      .replace(/{{title}}/g, item.title)
+      .replace(/{{content}}/g, content)
+      .replace(/{{url}}/g, sourceUrl)
+      .replace(/{{source}}/g, sourceTitle)
+      .replace(/{{id}}/g, itemId)
+      .replace(/{{date}}/g, itemDate)
+      .replace(/{{author}}/g, author)
+      .replace(/{{tags}}/g, categories.join(','));
+  } else {
+    // Default template
+    markdownContent = `---
+id: "${itemId}"
 title: "${item.title.replace(/"/g, '\\"')}"
-date: ${new Date((item.published || 0) * 1000).toISOString()}
-source: ${item.origin?.title || 'Unknown'}
-tags: [inoreader, rss]
+author: "${author.replace(/"/g, '\\"')}"
+date: ${itemDate}
+source: "${sourceTitle.replace(/"/g, '\\"')}"
+tags: [inoreader, rss, ${categories.join(',')}]
 url: ${sourceUrl}
 ---
 
@@ -268,6 +278,82 @@ ${content}
 
 [View Original Source](${sourceUrl})
 `;
+  }
 
   return { generatedTitle: sanitizedTitle, markdownContent };
+}
+
+async function htmlToMarkdown(app: App, html: string): Promise<string> {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    let markdown = convertNodeToMarkdown(doc.body);
+
+    // Clean up extra whitespace
+    markdown = markdown.replace(/\n\s*\n/g, '\n\n');
+    markdown = markdown.replace(/\n{3,}/g, '\n\n');
+    markdown = markdown.trim();
+
+    return markdown;
+}
+
+function convertNodeToMarkdown(node: Node): string {
+    if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent || '';
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+        return '';
+    }
+
+    const element = node as Element;
+    let childrenMarkdown = '';
+    for (const child of Array.from(element.childNodes)) {
+        childrenMarkdown += convertNodeToMarkdown(child);
+    }
+
+    switch (element.tagName.toLowerCase()) {
+        case 'h1':
+            return `\n# ${childrenMarkdown.trim()}\n`;
+        case 'h2':
+            return `\n## ${childrenMarkdown.trim()}\n`;
+        case 'h3':
+            return `\n### ${childrenMarkdown.trim()}\n`;
+        case 'h4':
+            return `\n#### ${childrenMarkdown.trim()}\n`;
+        case 'h5':
+            return `\n##### ${childrenMarkdown.trim()}\n`;
+        case 'h6':
+            return `\n###### ${childrenMarkdown.trim()}\n`;
+        case 'p':
+            return `\n${childrenMarkdown.trim()}\n`;
+        case 'br':
+            return '\n';
+        case 'strong':
+        case 'b':
+            return `**${childrenMarkdown.trim()}**`;
+        case 'em':
+        case 'i':
+            return `*${childrenMarkdown.trim()}*`;
+        case 'blockquote':
+            return `\n> ${childrenMarkdown.trim().replace(/\n/g, '\n> ')}\n`;
+        case 'ul':
+            return `\n${childrenMarkdown.trim()}\n`;
+        case 'ol':
+            let i = 1;
+            return `\n${childrenMarkdown.trim().replace(/<li[^>]*>/gi, () => `${i++}. `)}\n`;
+        case 'li':
+            return `- ${childrenMarkdown.trim()}\n`;
+        case 'a':
+            return `[${childrenMarkdown.trim()}](${element.getAttribute('href')})`;
+        case 'img':
+            return `![${element.getAttribute('alt') || ''}](${element.getAttribute('src')})`;
+        case 'hr':
+            return '\n---\n';
+        case 'pre':
+            return `\n\`\`\`\n${childrenMarkdown}\n\`\`\`\n`;
+        case 'code':
+            return `\`${childrenMarkdown.trim()}\``;
+        default:
+            return childrenMarkdown;
+    }
 }

@@ -31,5 +31,20 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   tags: [],
   targetFolder: '',
   syncOnStartup: false,
-  template: 'default'
+  template: `---
+id: "{{id}}"
+title: "{{title}}"
+author: "{{author}}"
+date: {{date}}
+source: "{{source}}"
+tags: [inoreader, rss, {{tags}}]
+url: {{url}}
+---
+
+# {{title}}
+
+{{content}}
+
+[View Original Source]({{url}})
+`
 };
