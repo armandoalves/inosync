@@ -1,6 +1,6 @@
 {
   "name": "inosync",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Sync Inoreader tagged items into vault folder notes.",
   "main": "main.js",
   "scripts": {
