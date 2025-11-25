@@ -24,6 +24,8 @@ jobs:
           npm run build
 
       - name: Create release
+        permissions:
+          contents: write
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
