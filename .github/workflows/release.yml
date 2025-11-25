@@ -28,7 +28,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-
+          git config user.email "armandoalves@gmail.com"
+          git config user.name "armandoalves"
           gh release create "$tag" \
             --generate-notes \
             --title "Release $tag" \
