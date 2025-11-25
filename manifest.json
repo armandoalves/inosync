@@ -4,7 +4,7 @@
 	"version": "1.0.2",
 	"minAppVersion": "0.15.0",
 	"description": "Sync Inoreader tagged items into vault folder notes.",
-	"author": "Armando Alves",
+	"author": "armandoalves",
 	"authorUrl": "https://www.armandoalves.com",
 	"isDesktopOnly": false
 }
