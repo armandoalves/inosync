@@ -163,11 +163,12 @@ class InoSyncSettingTab extends PluginSettingTab {
 
     display(): void {
         const { containerEl } = this;
-        containerEl.empty();
+        containerEl.innerHTML = '';
         
         // Create a root div for React with the correct scope class
         // Note: No fixed height here, let Obsidian handle scrolling of the parent
-        const reactRoot = containerEl.createDiv({ cls: 'inosync-settings-wrapper' });
+        const reactRoot = containerEl.appendChild(document.createElement('div'));
+        reactRoot.className = 'inosync-settings-wrapper';
         
         // Mount React
         this.root = createRoot(reactRoot);
